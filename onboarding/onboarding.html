@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Bem-vindo — Marketplace Media Extractor</title>
+  <style>
+    :root{color-scheme:light;font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;color:#111827;background:radial-gradient(circle at top left,#dbeafe 0,#eff6ff 28%,#fff7ed 68%,#ffffff 100%)}
+    *{box-sizing:border-box}
+    body{margin:0;min-height:100vh;padding:22px;display:grid;place-items:center}
+    .shell{width:min(980px,100%);display:grid;grid-template-columns:1.1fr .9fr;background:rgba(255,255,255,.9);border:1px solid rgba(255,255,255,.75);border-radius:28px;box-shadow:0 30px 90px rgba(15,23,42,.16),0 10px 30px rgba(15,23,42,.08);overflow:hidden;backdrop-filter:blur(8px)}
+    .hero{padding:34px 34px 28px;background:linear-gradient(155deg,#0f172a 0%,#172554 52%,#1d4ed8 100%);color:#fff;display:grid;gap:20px;align-content:start}
+    .brand{display:flex;align-items:center;gap:16px}.brand img{width:78px;height:78px;border-radius:22px;box-shadow:0 16px 34px rgba(0,0,0,.25)}
+    .badge{display:inline-flex;align-items:center;gap:8px;padding:7px 12px;border-radius:999px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.18);font-size:12px;font-weight:800;letter-spacing:.02em}
+    .title{font-size:36px;line-height:1.08;margin:0;font-weight:850}
+    .lead{margin:0;font-size:15px;line-height:1.65;color:rgba(255,255,255,.86);max-width:46ch}
+    .highlights{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:6px}.highlight{padding:14px;border-radius:16px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.12)}
+    .highlight strong{display:block;font-size:13px;margin-bottom:4px}.highlight span{display:block;font-size:12px;line-height:1.5;color:rgba(255,255,255,.82)}
+    .steps{display:grid;gap:10px;margin-top:4px}.step{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border-radius:16px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.10)}
+    .step-num{width:28px;height:28px;border-radius:999px;background:#fff;color:#172554;display:grid;place-items:center;font-size:13px;font-weight:900;flex:0 0 28px}.step strong{display:block;font-size:13px;margin-bottom:3px}.step span{font-size:12px;line-height:1.5;color:rgba(255,255,255,.82)}
+    .setup{padding:32px 34px 28px;display:flex;flex-direction:column;gap:18px;background:linear-gradient(180deg,#ffffff 0%,#fbfdff 100%);min-height:100%}
+    .eyebrow{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#64748b}
+    h2{margin:0;font-size:26px;line-height:1.15;color:#0f172a}.sub{margin:0;color:#64748b;font-size:14px;line-height:1.6}
+    .config-grid{display:grid;gap:14px}.field{display:grid;gap:7px}.field label{font-size:12px;font-weight:800;color:#334155}.select{width:100%;padding:11px 12px;border:1px solid #d1d5db;border-radius:12px;background:#fff;outline:none;transition:border-color .15s ease,box-shadow .15s ease}.select:focus{border-color:#2563eb;box-shadow:0 0 0 4px rgba(37,99,235,.12)}
+    .tip{padding:14px 15px;border-radius:16px;background:#f8fafc;border:1px solid #e2e8f0;color:#475569;font-size:13px;line-height:1.55}.tip strong{color:#0f172a}
+    .footer-area{margin-top:auto;display:grid;gap:14px;padding-top:8px}
+    .later{font-size:12px;color:#6b7280;line-height:1.5}.later code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:#eef2ff;color:#172554;border-radius:8px;padding:2px 6px}
+    .footer-links{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:#64748b}.footer-links a{color:#2563eb;text-decoration:none}.footer-links a:hover{text-decoration:underline}
+    .actions{display:flex;justify-content:flex-end;gap:10px;align-items:center}
+    .btn{border:0;border-radius:13px;padding:12px 16px;font-weight:800;font-size:13px;cursor:pointer;transition:transform .12s ease,filter .15s ease,background .15s ease}.btn:hover{filter:brightness(1.02)}.btn:active{transform:scale(.98)}
+    .btn.secondary{background:#eef2ff;color:#172554}.btn.primary{background:#e85d04;color:#fff;box-shadow:0 14px 32px rgba(232,93,4,.22)}
+    @media (max-width:860px){.shell{grid-template-columns:1fr}.hero,.setup{padding:24px}.highlights{grid-template-columns:1fr 1fr}}
+    @media (max-width:620px){body{padding:12px}.title{font-size:30px}.highlights{grid-template-columns:1fr}.actions{flex-direction:column;align-items:stretch}.actions .btn{width:100%}.hero,.setup{padding:20px}}
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <section class="hero">
+      <div class="brand">
+        <img src="../assets/icons/icon128.png" alt="Ícone do Marketplace Media Extractor">
+        <div>
+          <div class="badge">Marketplace Media Extractor · v<span id="onboardingVersion">0.4.0</span></div>
+          <h1 class="title">Baixe imagens e vídeos do anúncio com muito mais agilidade.</h1>
+        </div>
+      </div>
+      <p class="lead">A extensão adiciona controles discretos na própria página do Mercado Livre, encontra a melhor mídia disponível, permite renomear o produto e baixar vídeos suportados sem sair do anúncio.</p>
+      <div class="highlights">
+        <div class="highlight"><strong>Controles na página</strong><span>Baixe a mídia atual, a galeria inteira ou prepare um lote com poucos cliques.</span></div>
+        <div class="highlight"><strong>Mais organização</strong><span>Use nomes de produto, pastas e templates para manter seus arquivos padronizados.</span></div>
+      </div>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div><strong>Abra um anúncio</strong><span>O botão da extensão aparece sobre a foto ou o vídeo principal do produto.</span></div></div>
+        <div class="step"><div class="step-num">2</div><div><strong>Clique em baixar</strong><span>Salve somente aquela mídia, ou use o menu para baixar tudo.</span></div></div>
+        <div class="step"><div class="step-num">3</div><div><strong>Prepare o lote</strong><span>Revise nome do produto, seleção, formatos e organização dos arquivos.</span></div></div>
+      </div>
+    </section>
+    <section class="setup">
+      <div>
+        <div class="eyebrow">Configuração inicial</div>
+        <h2>Deixe do seu jeito logo no primeiro uso</h2>
+        <p class="sub">Você pode alterar tudo depois em <strong>Configurações</strong>, diretamente na página do Mercado Livre.</p>
+      </div>
+      <div class="config-grid">
+        <div class="field">
+          <label for="format">Formato padrão das imagens</label>
+          <select class="select" id="format">
+            <option value="jpeg">JPEG 95%</option>
+            <option value="original">Original</option>
+            <option value="png">PNG</option>
+            <option value="webp">WebP</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="all">Ao clicar em “Baixar tudo”</label>
+          <select class="select" id="all">
+            <option value="prepare">Abrir Preparar download</option>
+            <option value="download">Baixar imediatamente</option>
+          </select>
+        </div>
+      </div>
+      <div class="tip"><strong>Dica:</strong> se você costuma renomear os arquivos antes de salvar, deixe a ação de “Baixar tudo” em <strong>Preparar download</strong>. Assim você já entra direto na tela de revisão.</div>
+      <div class="footer-area">
+        <div>
+          <div class="later">Depois você poderá revisar tudo em <code>Configurações</code> e na aba <code>Sobre</code>.</div>
+          <div class="footer-links">
+            <a href="https://github.com/ehstbr/marketplace-media-extractor" target="_blank" rel="noreferrer">GitHub</a>
+            <a href="https://eduhcommerce.com.br" target="_blank" rel="noreferrer">eduhcommerce.com.br</a>
+            <a href="https://instagram.com/eduhcommmerce" target="_blank" rel="noreferrer">@eduhcommmerce</a>
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn secondary" id="advanced" type="button">Configurações avançadas</button>
+          <button class="btn primary" id="finish" type="button">Começar a usar</button>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script src="onboarding.js" defer></script>
+</body>
+</html>

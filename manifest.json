@@ -1,0 +1,74 @@
+{
+  "manifest_version": 3,
+  "name": "Marketplace Media Extractor",
+  "short_name": "Media Extractor",
+  "version": "0.4.1",
+  "description": "Extrai imagens em alta qualidade e vídeos de anúncios do Mercado Livre, com HLS MPEG-TS, renomeação e configurações integradas à página.",
+  "minimum_chrome_version": "109",
+  "permissions": [
+    "storage",
+    "downloads",
+    "offscreen",
+    "webRequest"
+  ],
+  "host_permissions": [
+    "https://*.mercadolivre.com.br/*",
+    "https://*.mercadolibre.com/*",
+    "https://*.mlstatic.com/*",
+    "https://*.meli.net/*"
+  ],
+  "background": {
+    "service_worker": "background/service-worker.js"
+  },
+  "action": {
+    "default_title": "Marketplace Media Extractor",
+    "default_icon": {
+      "16": "assets/icons/icon16.png",
+      "32": "assets/icons/icon32.png",
+      "48": "assets/icons/icon48.png",
+      "128": "assets/icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "assets/icons/icon16.png",
+    "32": "assets/icons/icon32.png",
+    "48": "assets/icons/icon48.png",
+    "128": "assets/icons/icon128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*.mercadolivre.com.br/*",
+        "https://*.mercadolibre.com/*"
+      ],
+      "js": [
+        "content/core.js",
+        "content/extractor.js",
+        "content/ui.js",
+        "content/bootstrap.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "options_ui": {
+    "page": "options/options.html",
+    "open_in_tab": false
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "assets/icons/icon16.png",
+        "assets/icons/icon32.png",
+        "assets/icons/icon48.png",
+        "assets/icons/icon128.png"
+      ],
+      "matches": [
+        "https://*.mercadolivre.com.br/*",
+        "https://*.mercadolibre.com/*"
+      ]
+    }
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  }
+}
