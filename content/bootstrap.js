@@ -9,6 +9,11 @@
     refreshTimer = setTimeout(async () => {
       try {
         await MME.loadSettings();
+        if (!MME.isProductDetailPage?.()) {
+          MME.state.listing = null;
+          MME.removeInlineUI?.();
+          return;
+        }
         await MME.extractListing();
         if (reason === 'navigation') {
           document.getElementById('mme-gallery-controls-host')?.remove();
@@ -32,6 +37,11 @@
       if (!relevant) return;
       try {
         await MME.loadSettings();
+        if (!MME.isProductDetailPage?.()) {
+          MME.state.listing = null;
+          MME.removeInlineUI?.();
+          return;
+        }
         MME.installUI?.();
         MME.syncGalleryControlsAnchor?.();
         MME.syncThumbnailControls?.();
@@ -59,6 +69,11 @@
       notify();
       clearTimeout(mutationTimer);
       mutationTimer = setTimeout(() => {
+        if (!MME.isProductDetailPage?.()) {
+          MME.state.listing = null;
+          MME.removeInlineUI?.();
+          return;
+        }
         MME.syncGalleryControlsAnchor?.();
         MME.syncThumbnailControls?.();
         MME.refreshControls?.();

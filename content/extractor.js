@@ -10,6 +10,50 @@
     return document.querySelector(selector)?.content?.trim() || '';
   }
 
+
+  function isExplicitNonProductRoute(pathname = location.pathname) {
+    const path = String(pathname || '').toLowerCase();
+    return [
+      '/loja/', '/ofertas', '/categoria', '/categorias', '/listado', '/search',
+      '/shorts/', '/a/store/', '/landing', '/perfil/', '/ajuda/'
+    ].some((prefix) => path.startsWith(prefix) || path.includes(prefix));
+  }
+
+  function isProductDetailUrl(url = location.href) {
+    try {
+      const u = new URL(url, location.href);
+      const path = decodeURIComponent(u.pathname || '');
+      if (isExplicitNonProductRoute(path)) return false;
+
+      // Current Mercado Livre PDP/catalog/user-product URL families.
+      if (/\/p\/MLB\d+(?:[/?#-]|$)/i.test(path)) return true;
+      if (/\/up\/MLBU\d+(?:[/?#-]|$)/i.test(path)) return true;
+      if (/\/MLB-?\d+(?:[-_/?#]|$)/i.test(path)) return true;
+
+      return false;
+    } catch {
+      return false;
+    }
+  }
+
+  function isProductDetailPage() {
+    if (isExplicitNonProductRoute()) return false;
+    if (isProductDetailUrl()) return true;
+
+    // Conservative DOM fallback for future Mercado Livre URL changes.
+    // A Product JSON-LD alone is not enough because storefront/listing pages can embed
+    // product cards. Require a real PDP shell/gallery too.
+    const hasPdpShell = Boolean(document.querySelector(
+      '.ui-pdp-container, .ui-pdp-gallery, [class*="ui-pdp-container"], [class*="ui-pdp-gallery"], [data-testid*="pdp"]'
+    ));
+    if (!hasPdpShell) return false;
+    if (getMeta('og:type', true).toLowerCase() === 'product') return true;
+    return parseJsonLdProducts().length > 0;
+  }
+
+  MME.isProductDetailUrl = isProductDetailUrl;
+  MME.isProductDetailPage = isProductDetailPage;
+
   function parseIds() {
     const all = `${location.pathname} ${location.search} ${location.hash}`;
     const catalog = location.pathname.match(/\/p\/(MLB\d+)/i)?.[1]?.toUpperCase() || null;
@@ -58,11 +102,30 @@
     return match?.[1]?.toLowerCase() || '';
   }
 
-  function imageKey(url) {
+  function mlPictureId(url) {
     try {
-      const u = new URL(url);
-      let path = u.pathname;
-      path = path.replace(/-[A-Z](?=\.(?:jpe?g|png|webp)$)/i, '-SIZE');
+      const u = new URL(url, location.href);
+      // Mercado Livre image derivatives (F/O/C/I, JPG/WebP, D_NQ_NP_2X_, etc.)
+      // retain the same stable picture id inside the filename.
+      const decoded = decodeURIComponent(u.pathname);
+      const match = decoded.match(/(\d+-ML[A-Z]\d+_\d+)/i);
+      return match?.[1]?.toUpperCase() || null;
+    } catch {
+      const match = String(url || '').match(/(\d+-ML[A-Z]\d+_\d+)/i);
+      return match?.[1]?.toUpperCase() || null;
+    }
+  }
+
+  function imageKey(url) {
+    const pictureId = mlPictureId(url);
+    if (pictureId) return `mlpic:${pictureId.toLowerCase()}`;
+    try {
+      const u = new URL(url, location.href);
+      let path = decodeURIComponent(u.pathname);
+      // Fallback for legacy/unknown image URLs: collapse ML size suffix and file format.
+      path = path.replace(/-[A-Z](?=\.(?:jpe?g|png|webp|avif)$)/i, '-SIZE');
+      path = path.replace(/\.(?:jpe?g|png|webp|avif)$/i, '.IMAGE');
+      path = path.replace(/^\/D_[A-Z0-9_]+_/i, '/D_');
       return `${u.hostname}${path}`.toLowerCase();
     } catch {
       return String(url).toLowerCase();
@@ -106,8 +169,10 @@
       width: meta.width || 0,
       height: meta.height || 0,
       selected: meta.subtype !== 'video_poster',
-      source: meta.source || 'dom'
+      source: meta.source || 'dom',
+      pictureId: mlPictureId(url)
     };
+    current.pictureId = current.pictureId || mlPictureId(url);
     current.candidateUrls.push(...highResCandidates(url));
     current.candidateUrls = [...new Set(current.candidateUrls)];
     current.width = Math.max(current.width || 0, meta.width || 0);
@@ -403,6 +468,10 @@
   }
 
   MME.extractListing = async () => {
+    if (!isProductDetailPage()) {
+      MME.state.listing = null;
+      return null;
+    }
     const products = parseJsonLdProducts();
     const ids = parseIds();
     const images = collectImages(products);
@@ -524,7 +593,7 @@
     }
     return {
       extension: 'Marketplace Media Extractor',
-      version: '0.2.1',
+      version: chrome.runtime.getManifest().version,
       url: location.href,
       listingId: listing.listingId,
       catalogId: listing.catalogId,

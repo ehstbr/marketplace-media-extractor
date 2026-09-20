@@ -63,8 +63,25 @@ chrome.runtime.onInstalled.addListener(async (details) => {
   if (details.reason === 'install') await chrome.tabs.create({ url: chrome.runtime.getURL('onboarding/onboarding.html') });
 });
 
+
+function isProductDetailTabUrl(rawUrl = '') {
+  try {
+    const u = new URL(rawUrl);
+    if (!/(?:mercadolivre\.com\.br|mercadolibre\.com)$/i.test(u.hostname) &&
+        !/(?:^|\.)mercadolivre\.com\.br$/i.test(u.hostname) &&
+        !/(?:^|\.)mercadolibre\.com$/i.test(u.hostname)) return false;
+    const path = decodeURIComponent(u.pathname || '');
+    if (/\/(?:loja|ofertas|categoria|categorias|listado|search|shorts|landing|perfil|ajuda)(?:\/|$)/i.test(path)) return false;
+    return /\/p\/MLB\d+(?:[/?#-]|$)/i.test(path) ||
+      /\/up\/MLBU\d+(?:[/?#-]|$)/i.test(path) ||
+      /\/MLB-?\d+(?:[-_/?#]|$)/i.test(path);
+  } catch {
+    return false;
+  }
+}
+
 chrome.action.onClicked.addListener(async (tab) => {
-  const supported = /^https:\/\/[^/]*(?:mercadolivre\.com\.br|mercadolibre\.com)\//i.test(tab?.url || '');
+  const supported = isProductDetailTabUrl(tab?.url || '');
   if (supported && tab?.id >= 0) {
     try {
       await chrome.tabs.sendMessage(tab.id, { type: 'OPEN_SETTINGS_MODAL' });
@@ -179,7 +196,9 @@ async function probeImage(url) { return offscreen({ type: 'PROBE_IMAGE', url });
 async function resolveBestImage(media, jobId = null) {
   const candidates = [...new Set([...(media.candidateUrls || []), media.bestUrl, media.sourceUrl].filter(Boolean))];
   const probes = [];
-  const limited = candidates.slice(0, 6);
+  // A single logical Mercado Livre photo can expose many derivatives. Probe enough
+  // candidates to compare the HD/F source with rendered WebP/JPEG variants.
+  const limited = candidates.slice(0, 12);
   let completed = 0;
   if (jobId) await sendMediaProgress(jobId, { stage: 'resolving', percent: 5 });
   await parallelLimit(limited, 3, async (url) => {
@@ -190,7 +209,11 @@ async function resolveBestImage(media, jobId = null) {
     completed++;
     if (jobId) await sendMediaProgress(jobId, { stage: 'resolving', percent: Math.min(30, 8 + Math.round((completed / Math.max(1, limited.length)) * 22)) });
   });
-  probes.sort((a, b) => (b.width * b.height) - (a.width * a.height));
+  probes.sort((a, b) => {
+    const areaDiff = (b.width * b.height) - (a.width * a.height);
+    if (areaDiff) return areaDiff;
+    return Number(b.bytes || 0) - Number(a.bytes || 0);
+  });
   return probes[0] || { ok: Boolean(media.sourceUrl), url: media.sourceUrl, width: media.width || 0, height: media.height || 0, mimeType: media.mimeType || '' };
 }
 

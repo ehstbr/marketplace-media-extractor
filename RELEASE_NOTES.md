@@ -1,13 +1,18 @@
-# Release Notes — 0.4.1
+# Marketplace Media Extractor v0.4.3
 
-Esta release é focada em desempenho de lotes de imagens.
+## Corrigido
 
-## Destaques
+A extensão podia aparecer em páginas que não eram anúncios, como lojas oficiais, vitrines e listagens, especialmente quando a URL continha um parâmetro `item_id`.
 
-- downloads de imagens com concorrência controlada;
-- quantidade de downloads simultâneos configurável;
-- conversões JPEG/PNG/WebP com limite de concorrência independente;
-- modo Automático baseado em `navigator.hardwareConcurrency`;
-- probes de variantes executados em paralelo;
-- barra de progresso com itens concluídos, em processamento e na fila;
-- vídeos continuam sequenciais para evitar excesso de memória/rede.
+Agora os controles são ativados somente quando a página é reconhecida como uma página real de detalhe de produto/anúncio.
+
+### Comportamento esperado
+
+- ✅ Página de produto/anúncio: controles disponíveis
+- ✅ Página de catálogo de produto: controles disponíveis
+- ❌ Loja oficial: sem controles
+- ❌ Busca/listagem: sem controles
+- ❌ Categoria/ofertas: sem controles
+- ❌ Página de Clips: sem controles globais do extrator
+
+Também foi adicionada limpeza automática dos controles ao sair de um anúncio por navegação dinâmica do Mercado Livre.

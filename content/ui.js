@@ -1119,7 +1119,22 @@
     };
   };
 
+  MME.removeInlineUI = () => {
+    document.getElementById('mme-gallery-controls-host')?.remove();
+    document.getElementById('mme-floating-host')?.remove();
+    document.getElementById('mme-transfer-progress-host')?.remove();
+    cleanupThumbnailControls();
+    MME.state.galleryAnchor = null;
+    MME.syncGalleryControlsAnchor = null;
+    MME.repositionGalleryControls = null;
+    MME.syncThumbnailControls = null;
+  };
+
   MME.installUI = () => {
+    if (!MME.isProductDetailPage?.() || !MME.state.listing) {
+      MME.removeInlineUI?.();
+      return;
+    }
     const installers = [
       ['gallery controls', installGalleryControls],
       ['thumbnail controls', installThumbnailControls],
